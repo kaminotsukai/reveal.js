@@ -10,12 +10,17 @@
 
 ## 自己紹介
 
+<p style="font-size: 30px; text-align: left;">・加味真（かみまこと） @kaminotsukai (kmmk)</p>
+<p style="font-size: 30px; text-align: left;">・大阪出身</p>
+<p style="font-size: 30px; text-align: left;">・Laravel + Vueでお仕事します</p>
+<p style="font-size: 30px; text-align: left;">・趣味はバスケとボルダリングとカラオケ</p>
+
 
 >>>
 
 
 かみまこと
-
+<p style="font-size: 20px">新しいタブで開くことを推奨します</p>
 
 
 ---
@@ -619,7 +624,6 @@ public function update(SaveContactRequest $request, int $id)
 ## Vueのセットアップ (10)
 
 <p style="font-size: 30px">Vueプロジェクトの作成</p>
-<p style="font-size: 30px">axios / vue-router / element uiの導入を行います</p>
 
 
 >>>
@@ -641,20 +645,6 @@ $ docker exec -it app sh
   Use Yarn 
 ❯ Use NPM 
 ```
-
->>>
-
-axiosの導入
-
-```bash
-[appコンテナ]$ cd frontend
-
-[appコンテナ]$ npm install axios 
-
-// 立ち上げ
-[appコンテナ]$ npm run serve
-```
-
 
 >>>
 
@@ -730,8 +720,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 
-Vue.use(ElementUI, { size: 'small'})
-
 Vue.config.productionTip = false
 
 new Vue({
@@ -777,7 +765,7 @@ export default {
 
 >>>
 
-<p style="font-size: 30px; color: green; ">frontend/src/pages/index-contact.vue</p>
+<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/index-contact.vue</p>
 
 ```html
 <template>
@@ -791,7 +779,7 @@ export default {};
 
 >>>
 
-<p style="font-size: 30px; color: green; ">frontend/src/pages/save-contact.vue</p>
+<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
 
 ```html
 <template>
@@ -801,6 +789,44 @@ export default {};
 <script>
 export default {};
 </script>
+```
+
+>>>
+
+作成したページをrouterに追加
+
+<p style="font-size: 30px; color: green; ">frontend/src/router/index.js</p>
+
+```javascript
+import Vue from 'vue';
+import VueRouter from 'vue-router'
+
+//　追加
+import SaveContact from '../pages/contact/save-contact'
+import IndexContact from '../pages/contact/index-contact'
+
+Vue.use(VueRouter)
+
+// 追加
+const routes = [
+    {
+        path: '/',
+        name: 'contact',
+        component: IndexContact
+    },
+    {
+        path: '/create/contact',
+        name: 'create_contact',
+        component: SaveContact
+    },
+]
+
+const router = new VueRouter({
+    mode: 'history',
+    routes,
+})
+
+export default router
 ```
 
 >>>
@@ -848,7 +874,7 @@ new Vue({
 >>>
 
 ページの作成
-<p style="font-size: 30px; color: green; ">frontend/src/pages/index-contact.vue</p>
+<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/index-contact.vue</p>
 
 ```html
 <template>
@@ -918,9 +944,6 @@ new Vue({
 
 <script>
 export default {
-  components: {
-    Sidebar,
-  },
   data() {
     return {
       contacts: [{
@@ -985,6 +1008,245 @@ export default {
 </style>
 ```
 
+>>>
+
+ブラウザで確認してみよう
+
+---
+
+## axios導入 (13)
+<p style="font-size: 30px">Laravelで作成したAPIから連絡先のデータを取得しよう</p>
+
+>>>
+
+axiosインストール
+
+```bash
+[appコンテナ]$ cd frontend
+
+[appコンテナ]$ npm install axios 
+```
+
+>>>
+
+一覧ページでデータを取得する
+<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/index-contact.vue</p>
+
+```javascript
+<script>
+import axios from 'axios' // 追記
+const BASE_URL = 'http://localhost:8000' // 追記
+
+export default {
+  data() {
+    return {
+      contacts: []
+    }
+  },
+  methods: {
+    genderFormatter(row) { /* 処理 */ },
+
+    // 追記
+    axiosGetContacts() {
+      const endPoint = BASE_URL + '/api/contacts'
+      axios.get(endPoint)
+        .then(res => {
+          this.contacts = res.data.contacts
+        })
+        .catch(error => {
+            console.warn(error)
+        })
+    },
+  },
+  mounted() {
+    this.axiosGetContacts()
+  }
+};
+</script>
+```
+
+>>>
+
+CORSエラーが発生
+
+```
+Failed to load http://localhost:8000/api/contacts:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Origin 'http://localhost:8080' is therefore not allowed access.
+The response had HTTP status code 500.
+```
+
+---
+
+## 連絡先登録ページ (14)
+
+>>>
+
+連絡先登録画面
+<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
+
+```html
+<template>
+  <div>
+    <el-container 
+        style="border: 1px solid #eee; min-height:100vh;"
+    >
+
+      <el-header style="text-align: right; font-size: 12px">
+        <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 15px"></i>
+            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>View</el-dropdown-item>
+            <el-dropdown-item>Add</el-dropdown-item>
+            <el-dropdown-item>Delete</el-dropdown-item>
+            </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
+    
+    <el-container>
+        <Sidebar/>
+            <el-main>
+                <div style="width:800px; margin: auto; margin-top: 50px;">
+                    <div class="error" style="color: red;">
+                        {{ errorMsg }}
+                    </div>
+                    <span style="color: red; font-size: 8px;">※は必須です</span><br>
+                    <el-form :model="contacts" :rules="rules" ref="contacts" label-width="120px" class="demo-ruleForm">
+                        <el-form-item label="姓" prop="last_name" required>
+                            <el-input v-model="contacts.last_name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="名" prop="first_name" required>
+                            <el-input v-model="contacts.first_name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="性別" prop="gender" required>
+                            <el-radio-group v-model="contacts.gender">
+                            <el-radio :label="1">男性</el-radio>
+                            <el-radio :label="2">女性</el-radio>
+                            <el-radio :label="3">両方</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <span style="color: red; font-size: 8px;">ハイフンなしで入力してください</span>
+                        <el-form-item label="電話番号(携帯)" prop="phone_number" required>
+                            <el-input placeholder="例) 08011112222" v-model="contacts.phone_number"></el-input>
+                        </el-form-item>
+                        <el-form-item label="電話番号(自宅)" prop="house_phone_number">
+                            <el-input placeholder="例) 08011112222" v-model="contacts.house_phone_number"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Eメール" prop="email">
+                            <el-input v-model="contacts.email"></el-input>
+                        </el-form-item>
+                        <el-form-item label="住所" prop="address">
+                            <el-input v-model="contacts.address"></el-input>
+                        </el-form-item>
+                        <el-form-item label="誕生日">
+                            <el-col :span="11">
+                            <el-form-item prop="birthday">
+                                <el-date-picker 
+                                    type="date" 
+                                    v-model="contacts.birthday" 
+                                    style="width: 100%;"
+                                    value-format="yyyy-MM-dd"
+                                ></el-date-picker>
+                            </el-form-item>
+                            </el-col>
+                        </el-form-item>
+                        <el-form-item label="メモ" prop="memo">
+                            <el-input type="textarea" v-model="contacts.memo"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="saveContact()">登録</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </el-main>
+        </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+const BASE_URL = 'http://localhost:8000'
+
+export default {
+  data() {
+    return {
+      contacts: {
+          'last_name': '',
+          'first_name': '',
+          'phone_number': '',
+          'house_phone_number': '',
+          'email': '',
+          'address': '',
+          'birthday': '',
+          'memo': '',
+          'gender': 1,
+      },
+      errorMsg: '',
+      rules: {
+          last_name: [
+            { required: true, message: '必須項目です' },
+            { max: 30, message: '30文字以内で入力してください。' },
+          ],
+          first_name: [
+            { required: true, message: '必須項目です' },
+            { max: 30, message: '30文字以内で入力してください。' },
+          ],
+          phone_number: [
+            { required: true, message: '必須項目です' },
+          ],
+          memo: [
+            { max: 300, message: '300文字以内で入力してください。' },
+          ],
+      }
+    }
+  },
+  methods: {
+      axiosSaveContact() {
+          const endPoint = BASE_URL + '/api/contacts'
+          const params = {
+              'contacts': this.contacts
+          }
+
+          axios.post(endPoint, params, {headers: {'Content-Type': 'application/json'}})
+            .then(res => {
+                this.$router.push({name: 'contact'})
+            })
+            .catch(error => {
+                this.error(error.response.data.errors)
+                console.warn(error)
+            })
+            .finally(() => {
+                this.loading = false
+            })
+      },
+      axiosGetContact(id) {
+          const endPoint = BASE_URL + `/api/contacts/${id}`
+          
+          axios.get(endPoint)
+            .then(res => {
+                this.contacts = res.data.contacts
+            })
+            .catch(error => {
+                console.warn(error)
+            })
+      },
+      error(errors) {
+          this.errorMsg = errors['contacts.phone_number'][0];
+      }
+  }
+}
+</script>
+```
+
+---
+
+## 連絡先編集ページ (15)
+<p style="font-size: 30px">今回は保存と編集のページは同じUIのため一つのファイルで完結させる方が効率的です</p>
+
+>>>
+
+aaa
 
 ---
 
