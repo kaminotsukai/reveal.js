@@ -4,7 +4,7 @@
 >>>
 
 連絡先登録画面
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 30px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```html
 <template>

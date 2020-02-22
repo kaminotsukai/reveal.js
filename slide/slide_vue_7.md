@@ -5,7 +5,7 @@
 >>>
 
 連絡先登録ページと同じファイル
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 30px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```html
 <!--  一部抜粋してます -->
@@ -18,7 +18,7 @@
 >>>
 
 スクリプト部分
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 30px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```javascript
 <script>

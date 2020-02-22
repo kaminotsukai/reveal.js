@@ -4,6 +4,27 @@
 
 >>>
 
+編集するファイル
+
+```bash
+vue
+  ├── node_modules
+  ├── public
+  └──  src
+        ├── assets
+        ├── components
+        ├── pages
+        │     └── contact
+        │            ├── index-contact.vue #編集
+        │            └── save-contact.vue #編集
+        ├── router 
+        │     └── index.js
+        ├── main.js #編集
+        └── App.vue 
+```
+
+>>>
+
 ElementUIのインストール
 
 ```bash
@@ -15,7 +36,7 @@ ElementUIのインストール
 
 ElementUIの導入
 
-<p style="font-size: 30px; color: green; ">rontend/src/main.js</p>
+<p style="font-size: 20px; color: green; ">rontend/src/main.js</p>
 
 ```javascript
 import Vue from 'vue'
@@ -37,7 +58,7 @@ new Vue({
 >>>
 
 ページの作成
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/index-contact.vue</p>
+<p style="font-size: 20px; color: green; ">vue/src/pages/contact/index-contact.vue</p>
 
 ```html
 <template>

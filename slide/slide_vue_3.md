@@ -2,6 +2,27 @@
 ## Vue Router導入 (6)
 <p style="font-size: 30px">SPAにおける画面遷移を担当するvue-routerを導入していきます。</p>
 
+>>>
+
+編集するファイル
+
+```bash
+vue
+  ├── node_modules
+  ├── public
+  └──  src
+        ├── assets
+        ├── components
+        ├── pages #新規作成
+        │     └── contact
+        │            ├── index-contact.vue
+        │            └── save-contact.vue
+        ├── router #新規作成
+        │     └── index.js
+        ├── main.js #編集
+        └── App.vue #編集
+
+```
 
 >>>
 
@@ -14,7 +35,7 @@
 >>>
 
 routerディレクトリの作成
-<p style="font-size: 30px; color: green; ">frontend/src/router/index.js</p>
+<p style="font-size: 20px; color: green; ">vue/src/router/index.js</p>
 
 ```javascript
 import Vue from 'vue';
@@ -36,7 +57,7 @@ export default router
 
 vue-routerを使用可能にする
 
-<p style="font-size: 30px; color: green; ">frontend/src/main.js</p>
+<p style="font-size: 20px; color: green; ">vue/src/main.js</p>
 
 ```javascript
 import Vue from 'vue'
@@ -57,7 +78,7 @@ new Vue({
 
 ルートコンポーネントの作成
 
-<p style="font-size: 30px; color: green; ">frontend/src/App.vue</p>
+<p style="font-size: 20px; color: green; ">vue/src/App.vue</p>
 
 ```html
 <template>
@@ -88,7 +109,9 @@ export default {
 
 >>>
 
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/index-contact.vue</p>
+ページの編集
+
+<p style="font-size: 20px; color: green; ">vue/src/pages/contact/index-contact.vue</p>
 
 ```html
 <template>
@@ -100,9 +123,7 @@ export default {};
 </script>
 ```
 
->>>
-
-<p style="font-size: 30px; color: green; ">frontend/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 20px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```html
 <template>
@@ -118,7 +139,7 @@ export default {};
 
 作成したページをrouterに追加
 
-<p style="font-size: 30px; color: green; ">frontend/src/router/index.js</p>
+<p style="font-size: 20px; color: green; ">vue/src/router/index.js</p>
 
 ```javascript
 import Vue from 'vue';
@@ -154,6 +175,7 @@ export default router
 
 >>>
 
+確認
 
-完成図
-
+- http://localhost:8080/
+- http://localhost:8080/create/contact
