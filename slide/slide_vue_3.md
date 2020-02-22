@@ -1,5 +1,5 @@
 
-## Vue Router導入 (4)
+## Vue Router導入 (6)
 <p style="font-size: 30px">SPAにおける画面遷移を担当するvue-routerを導入していきます。</p>
 
 

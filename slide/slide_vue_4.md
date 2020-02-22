@@ -1,5 +1,5 @@
 
-## 連絡先一覧ページ (5)
+## 連絡先一覧ページ (7)
 <span style="font-size: 30px">今回はElementUIというUIコンポーネントでサクッと実装します</span>
 
 >>>

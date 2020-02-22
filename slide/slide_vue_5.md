@@ -1,5 +1,5 @@
 
-## axios導入 (6)
+## axios導入 (8)
 <p style="font-size: 30px">Laravelで作成したAPIから連絡先のデータを取得しよう</p>
 
 >>>
