@@ -57,6 +57,46 @@ new Vue({
 
 >>>
 
+サイドバーコンポーネントの作成
+<p style="font-size: 20px; color: green; ">vue/src/components/sidebar.vue</p>
+
+```html
+<template>
+    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+      <el-menu 
+      :default-openeds="['1', '3']"
+      :default-active="activeIndex"
+      mode="history"
+      router
+      >
+        <el-submenu index="1">
+          <template slot="title"><i class="el-icon-message"></i>連絡先登録アプリ</template>
+          <el-menu-item-group>
+            <template slot="title">基本機能</template>
+            <el-menu-item index="1-1" :route="{ name: 'create_contact' }">連絡先を登録する</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+    </el-aside>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            activeIndex: ''
+        }
+    },
+    mounted() {
+        this.activeIndex = this.$route.name;
+    }
+}
+</script>
+```
+
+>>>
+
+
 ページの作成
 <p style="font-size: 20px; color: green; ">vue/src/pages/contact/index-contact.vue</p>
 
@@ -78,21 +118,7 @@ new Vue({
       </el-header>
     
     <el-container>
-        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-menu 
-        :default-openeds="['1', '3']"
-        mode="history"
-        router
-        >
-            <el-submenu index="1">
-            <template slot="title"><i class="el-icon-message"></i>連絡先登録アプリ</template>
-            <el-menu-item-group>
-                <template slot="title">基本機能</template>
-                <el-menu-item index="1-1">連絡先を登録する</el-menu-item>
-            </el-menu-item-group>
-            </el-submenu>
-        </el-menu>
-        </el-aside>
+        <Sidebar/>
         <el-main>
             <el-table
             :data="contacts" 
@@ -126,7 +152,12 @@ new Vue({
 </template>
 
 <script>
+import Sidebar from '../../components/sidebar'
+
 export default {
+  components: {
+    Sidebar,
+  },
   data() {
     return {
       contacts: [{

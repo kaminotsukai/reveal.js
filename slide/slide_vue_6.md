@@ -25,22 +25,7 @@
       </el-header>
     
         <el-container>
-            <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-            <el-menu 
-            :default-openeds="['1', '3']"
-            :default-active="activeIndex"
-            mode="history"
-            router
-            >
-            <el-submenu index="1">
-            <template slot="title"><i class="el-icon-message"></i>連絡先登録アプリ</template>
-            <el-menu-item-group>
-                <template slot="title">基本機能</template>
-                <el-menu-item index="1-1" :route="{ name: 'create_contact' }">連絡先を登録する</el-menu-item>
-            </el-menu-item-group>
-            </el-submenu>
-        </el-menu>
-        </el-aside>
+            <Sidebar/>
             <el-main>
                 <div style="width:800px; margin: auto; margin-top: 50px;">
                     <div class="error" style="color: red;">
@@ -101,10 +86,14 @@
 </template>
 
 <script>
+import Sidebar from '../../components/sidebar'
 import axios from 'axios'
 const BASE_URL = 'http://localhost:8000'
 
 export default {
+  components: {
+    Sidebar,
+  },
   data() {
     return {
       contacts: {
@@ -145,7 +134,7 @@ export default {
           }
 
           axios.post(endPoint, params, {headers: {'Content-Type': 'application/json'}})
-            .then(res => {
+            .then(() => {
                 this.$router.push({name: 'contact'})
             })
             .catch(error => {
@@ -174,3 +163,7 @@ export default {
 }
 </script>
 ```
+
+>>>  
+
+登録できるか確認してみよう

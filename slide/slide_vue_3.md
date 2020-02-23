@@ -26,9 +26,16 @@ vue
 
 >>>
 
-インストール
+vue-routerのインストール
+<p style="font-size: 30px">以降、npm installの操作をするかしょがあります。</p>
+<p style="font-size: 30px">必ず、vueディレトリ以下で行うようにしてください。</p>
 
 ```bash
+#  appコンテナに入る
+$ docker exec -it app sh
+
+$ cd vue
+
 [appコンテナ]$ npm install vue-router
 ```
 
@@ -77,7 +84,7 @@ new Vue({
 >>>
 
 ルートコンポーネントの作成
-
+<p style="font-size: 20px;">上書きしてください</p>
 <p style="font-size: 20px; color: green; ">vue/src/App.vue</p>
 
 ```html

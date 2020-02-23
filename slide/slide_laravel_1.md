@@ -21,36 +21,29 @@ app	   bootstrap  composer.lock  database  package.json	  public       routes	  
 
 >>>
 
+ロケールの設定
+<p style="font-size: 20px; color: green; ">config/app.php</p>
+
+```php
+'locale' => 'ja',
+```
+
+>>>
+
 #### DBとの接続
 
 >>>
 
 <p style="font-size: 20px">backend直下にある`.env`というファイルを編集していきます。</p>
 <p style="font-size: 20px">ここではDB接続情報などの環境変数を記述していきます。</p>
-<p style="font-size: 20px; color: green; ">backend/.env</p>
+<p style="font-size: 20px; color: green; ">backend/.env(一部)</p>
 
-```
-APP_NAME=Laravel
-APP_ENV=local
-APP_KEY=base64:vzq1t6O3L3bjU79W+oHXDbbdQ19+yAxlfJZhLzR/iDA=
-APP_DEBUG=true
-APP_URL=http://localhost
-
-LOG_CHANNEL=stack
-
-<!--ここから上書き  -->
+```php
 DB_CONNECTION=mysql
 DB_HOST=db-host 
 DB_PORT=3306
 DB_DATABASE=database 
 DB_USERNAME=docker 
 DB_PASSWORD=docker 
-<!--ここまで  -->
-
-BROADCAST_DRIVER=log
-CACHE_DRIVER=file
-QUEUE_CONNECTION=sync
-SESSION_DRIVER=file
-SESSION_LIFETIME=120
 ```
 

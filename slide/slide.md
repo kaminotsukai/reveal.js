@@ -12,7 +12,7 @@ crowish勉強会
 <p style="font-size: 30px; text-align: left;">・新しい物好き</p>
 <p style="font-size: 30px; text-align: left;">・Laravel + Vueでお仕事します</p>
 <p style="font-size: 30px; text-align: left;">・趣味はバスケとボルダリングとカラオケ</p>
-<p style="font-size: 30px; text-align: left;">・最近Python面白そうってなってる</p>
+<p style="font-size: 30px; text-align: left;">・画像認識に興味あり</p>
 
 
 
@@ -121,3 +121,19 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-
 <p style="font-size: 20px">以下のような表示がされれば正常に動いています。</p>
 
 <img src="./test/examples/assets/pma.png" style="width: 800px;">
+
+
+>>>
+
+Dockerの基本操作
+
+```bash
+# コンテナに入っていないことを確認してください
+# プロンプトが`#`と表記されている場合はコンテナに入っているので `exit`でコンテナから抜けてください
+
+# 1. laravelの作業をする場合
+$ docker exec -it php bash
+
+# 2. vueの作業をする場合
+$ docker exec -it app sh
+```

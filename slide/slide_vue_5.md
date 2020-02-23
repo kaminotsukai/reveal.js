@@ -25,14 +25,13 @@ const BASE_URL = 'http://localhost:8000' // 追記
 export default {
   data() {
     return {
-      contacts: []
+      contacts: [] ★変更
     }
   },
   methods: {
-    genderFormatter(row) { /* 処理 */ },
+    genderFormatter(row) { /* 省略 */ },
 
-    // ここから追記
-    axiosGetContacts() {
+    axiosGetContacts() { ★追加
       const endPoint = BASE_URL + '/api/contacts'
       axios.get(endPoint)
         .then(res => {
@@ -42,36 +41,37 @@ export default {
             console.warn(error)
         })
     },
-    // ここまで
   },
-  // ここから追記   
-  mounted() {
+  mounted() { ★追加
     this.axiosGetContacts()
   }
-　// ここまで
 };
 </script>
 ```
 
 >>>
 
+ブラウザで確認してみよう
+<p style="font-size: 30px">開発者ツールでコンソールを確認</p>
+<p style="font-size: 30px">mac: option+command+i  windows: f12</p>
+
+>>>
+
 CORSエラーが発生
 
-```
-Access to XMLHttpRequest at ‘http://localhost:8000/api/contacts’ 
-from origin ‘http://localhost:8080’ has been blocked by CORS
-policy: No ‘Access-Control-Allow-Origin’ header is present on the requested resource.
-```
+<img src="./test/examples/assets/cors2.jpg" style="width: 600px;">
 
 >>>
 
 Cors(オリジン間リソース共有)とは
-<p style="font-size: 20px;">Webページ上の制限されたリソースを、リソースが提供されたドメイン以外の別のドメインから要求できるようにするメカニズムです</p>
+<p style="font-size: 20px;">Webページ上の制限されたリソースを、リソースが提供されたドメイン以外の別のドメインから要求できるようにする仕組み</p>
 <p style="font-size: 20px;">スキーム、ホスト、ポートがすべて一致した場合のみ、同じオリジンであると見なされます</p>
+<img src="./test/examples/assets/cors.jpg" style="width: 600px;">
 
 >>>
 
 Corsミドルウェアの作成
+<p style="font-size: 20px;">Preflight Request用にレスポンスにアクセスを許容するヘッダーをつける役割を持ちます</p>
 
 ```bash
 # PHPコンテナの中に入る
@@ -127,6 +127,7 @@ protected $routeMiddleware = [
     'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
     'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
     'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     'cors'          => \App\Http\Middleware\Cors::class, // 追加
 ];
 ```
@@ -142,15 +143,21 @@ protected $routeMiddleware = [
 use Illuminate\Http\Request;
 
 Route::middleware(['cors'])->group(function () {
+
+    // ここから追記
     Route::options('/{any}', function() {
-        return response()->json();;
+        return response()->json();
     })->where('any', '.*');
+    // ここまで
+
     Route::get('contacts', 'ContactController@index');
     Route::post('contacts', 'ContactController@store');
     Route::delete('contacts/{id}', 'ContactController@destroy'); 
     Route::get('contacts/{id}', 'ContactController@edit'); 
     Route::put('contacts/{id}', 'ContactController@update');
-}
+});
 ```
 
+>>>
 
+ブラウザでCORSエラーがでないか確認してみる
