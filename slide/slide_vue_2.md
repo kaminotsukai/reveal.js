@@ -9,6 +9,9 @@
 Vue.jsプロジェクトの作成
 
 ```bash
+// phpコンテナに入ってる場合は抜ける
+[phpコンテナ] exit
+
 // appコンテナに入る
 $ docker exec -it app sh
 
@@ -22,6 +25,10 @@ $ docker exec -it app sh
 ? Pick the package manager to use when installing dependencies: (Use arrow keys)
   Use Yarn 
 ❯ Use NPM 
+
+[appコンテナ]$ cd vue
+
+[appコンテナ]$ npm run serve
 ```
 
 
@@ -29,4 +36,4 @@ $ docker exec -it app sh
 
 Vueが立ち上がっているか確認
 
-http://localhost:8080
+<a href="http://localhost:8080" target="_blank">http://localhost:8080</a>

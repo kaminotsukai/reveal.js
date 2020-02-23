@@ -142,7 +142,9 @@ protected $routeMiddleware = [
 use Illuminate\Http\Request;
 
 Route::middleware(['cors'])->group(function () {
-    Route::options('{any}');
+    Route::options('/{any}', function() {
+        return response()->json();;
+    })->where('any', '.*');
     Route::get('contacts', 'ContactController@index');
     Route::post('contacts', 'ContactController@store');
     Route::delete('contacts/{id}', 'ContactController@destroy'); 

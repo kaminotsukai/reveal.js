@@ -56,6 +56,18 @@ sample
 
 >>>
 
+<p style="font-size: 20px ;">今回はDockerを使用するため、どのコンテナで作業するか明確にするために以下のような表示をします</p>
+
+```bash
+# Laravelの作業
+[phpコンテナ] $ php artisan migrate
+
+# Vueの作業
+[appコンテナ] $ npm run serve
+```
+
+>>>
+
 Laravel + Vue + MySQLの環境構築
 
 <p style="font-size: 20px ;color: red;">注意 : ポート番号8080/8000は開けておいてください</p>
@@ -73,7 +85,7 @@ $ docker-compose up -d
 // コンテナが起動しているか確認(STATUSの項目がUPになっていたら起動完了)
 $ docker-compose ps
 
-[省略してます]
+5つのコンテナが起動していることが確認できればOK！
 STATUS              PORTS                 
 Up 52 seconds       0.0.0.0:1234->80/tcp  
 Up 52 seconds       0.0.0.0:80->80/tcp    
@@ -101,13 +113,11 @@ Up 54 seconds       9000/tcp
 sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 
->>>
-
-### 確認
 
 >>>
 
-<p style="font-size: 20px">新しいタブで開くことを推奨します</p>
+確認
+<p style="font-size: 30px"><a href="http://localhost:1234" target="_blank">http://localhost:1234</a></p>
+<p style="font-size: 20px">以下のような表示がされれば正常に動いています。</p>
 
-- http://localhost:8000
-- http://localhost:1234
+<img src="./test/examples/assets/pma.png" style="width: 800px;">

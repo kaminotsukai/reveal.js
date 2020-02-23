@@ -34,6 +34,7 @@ Laravelの処理の流れ
 
 ```bash
 [phpコンテナ]$ php artisan make:migration create_contacts_table
+Created Migration: xxxx_xx_xx_xxxxxx_create_contacts_table
 ```
 
 >>>
@@ -44,7 +45,15 @@ Laravelの処理の流れ
 <p style="font-size: 20px; color: green; ">database/migrations/xxxx_xx_xx_xxxxxx_create_contacts_table.php</p>
 
 ```php
-public function up()
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateContactsTable extends Migration
+{
+    public function up()
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -65,6 +74,8 @@ public function up()
     {
         Schema::dropIfExists('contacts');
     }
+}
+
 ```
 
 >>>
@@ -96,6 +107,7 @@ public function up()
 namespace App\Models;
 
 use Carbon\Carbon;
+// Eloquentを使用します
 use Illuminate\Database\Eloquent\Model;
 
 class Contact extends Model
@@ -130,6 +142,8 @@ Route::post('contacts', 'ContactController@store');
 
 
 フォームリクエスト
+<p style="font-size: 20px;">リクエストのバリデーション担当者</p>
+<p style="font-size: 20px;">コントローラーに直接記述することも可能ですが、煩雑化を防ぐために責務を分けて記述しています</p>
 
 ```bash
 [phpコンテナ内]$ php artisan make:request SaveContactRequest
@@ -137,6 +151,7 @@ Route::post('contacts', 'ContactController@store');
 
 >>>
 
+フォームリクエストの編集
 <p style="font-size: 20px; color: green; ">app/Http/Requests/SaveContactRequest.php</p>
 
 ```php
@@ -178,13 +193,6 @@ class SaveContactRequest extends FormRequest
             'contacts.gender' => 'required|numeric'
         ];
     }
-
-    public function messages()
-    {
-        return [
-            'contacts.*.required' => ':attributeは必須項目です',
-        ];
-    }
 }
 
 ```
@@ -204,15 +212,18 @@ $ docker exec -it php bash
 
 >>>
 
-<p style="font-size: 20px; color: green; ">app/Http/Controllers/Auth/ContactController.php</p>
+<p style="font-size: 20px">モデル(Eloquentなど)は特定のデータベーステーブルと対応します。</p>
+<p style="font-size: 20px">これはデータの取得するのに開発者がSQLを意識しなくてもPHP風に操作することを可能にします</p>
+<p style="font-size: 20px; color: green; ">app/Http/Controllers/ContactController.php</p>
 
 ```php
 <?php
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SaveContactRequest;
-use App\Models\Contact;
+use Illuminate\Http\Request;
+use App\Http\Requests\SaveContactRequest; // 追加
+use App\Models\Contact; // 追加
 
 class ContactController extends Controller
 {
@@ -222,8 +233,10 @@ class ContactController extends Controller
     {
         $contacts = $request->contacts;
 
+        // contactテーブルにリクエストデータを挿入
         Contact::create($contacts);
 
+        // json形式でレスポンスを返却
         return response()->json();
     }
 }
@@ -243,6 +256,7 @@ APIの挙動を確認する
 
 以下の内容でリクエストを送信してください
 
+200返却で正常です！
 <p style="font-size: 20px">URL: http://localhost:8000/api/contacts</p>
 
 ```

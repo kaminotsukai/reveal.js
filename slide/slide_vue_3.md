@@ -104,7 +104,7 @@ export default {
 <p style="font-size: 30px">src配下にpagesというディレクトリを作成してください</p>
 
 - <span style="font-size: 30px">index-contact.vue(一覧表示)</span>
-- <span style="font-size: 30px">save-contact.vue(保存/編集)</span>
+- <span style="font-size: 30px">save-contact.vue(保存)</span>
 
 
 >>>

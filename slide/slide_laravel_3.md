@@ -134,16 +134,17 @@ class ContactController extends Controller
 
     public function edit($id)
     {
-        $contacts = Contact::findOrFail($id);
+        $contacts = Contact::find($id);
 
         return response()->json([
             'contacts' => $contacts
         ]);
     }
 
+    // Request -> SaveContactRequest
     public function update(SaveContactRequest $request, int $id)
     {
-        $contact = Contact::findOrFail($id);
+        $contact = Contact::find($id);
         $contact->update($request->contacts);
 
         return response()->json();
@@ -151,4 +152,6 @@ class ContactController extends Controller
 }
 ```
 
+>>>
 
+Yet Another Rest Clientで一通り挙動確認してみよう
