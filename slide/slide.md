@@ -8,36 +8,49 @@ crowish勉強会
 ## 自己紹介
 
 <p style="font-size: 30px; text-align: left;">・かみまこと @kaminotsukai (kmmk)</p>
-<p style="font-size: 30px; text-align: left;">・大阪出身</p>
-<p style="font-size: 30px; text-align: left;">・新しい物好き</p>
-<p style="font-size: 30px; text-align: left;">・Laravel + Vueでお仕事します</p>
+<p style="font-size: 30px; text-align: left;">・Laravel + Vueでお仕事してます</p>
+<p style="font-size: 30px; text-align: left;">・みんなでわいわいする会好き（特にLT）</p>
 <p style="font-size: 30px; text-align: left;">・趣味はバスケとボルダリングとカラオケ</p>
-<p style="font-size: 30px; text-align: left;">・画像認識に興味あり</p>
-
+<p style="font-size: 30px; text-align: left;">・google io本場で見たい</p>
 
 
 ---
 
-## 目次
+## 今回の流れ
 
 >>>
 
-- 作成するミニアプリのデモ
+
+- イントロダクション
 - Dockerで環境構築
 - LaravelでAPI開発
-- Vue.jsで画面開発
+- Vueでフロントエンド開発
+- これから(懇親会)
+- リファクタ(時間が余れば)
+
+>>>
+
+今回の目的
+
+- LaravelとVueを繋げる方法を理解する
+- Laravel + Vueの基本的な機能を知ることができる
+- 必要最低限のCRUDの実装ができるようになる
+- axiosを使ったAPI通信の実装ができるようになる
+- corsを理解する
 
 ---
 
-## Dockerで環境を構築する (1)
+## Dockerで環境を構築する
 <p style="font-size: 20px ;">環境構築後は各自スピードが異なる可能性があるので、自分のペースで進めていただいて構いません</p>
 
 >>>
 
 ### ファイル構成
 
+<p style="font-size: 20px ;">以降編集するLaravel/Vueのファイルはホスト側にマウントされているので、vscodeなどで編集可能です</p>
+
 ```
-sample
+laraVue-docker-compose
     ├── Docker => 各コンテナの設定ファイル
     │   ├── mysql
     │   ├── nginx
@@ -49,21 +62,9 @@ sample
     │       └── php.ini
     ├── var
     │   └── www
-    │       ├── backend => Laravel
-    │       └── frontend => VueCli
+    │       ├── backend => Laravel 
+    │       └── frontend => VueCli 
     └── docker-compose.yml
-```
-
->>>
-
-<p style="font-size: 20px ;">今回はDockerを使用するため、どのコンテナで作業するか明確にするために以下のような表示をします</p>
-
-```bash
-# Laravelの作業
-[phpコンテナ] $ php artisan migrate
-
-# Vueの作業
-[appコンテナ] $ npm run serve
 ```
 
 >>>
@@ -97,7 +98,7 @@ Up 54 seconds       9000/tcp
 
 今回のDockerの構成
 
-<img src="./test/examples/assets/docker-compose.png" style="width: 800px;">
+<img src="./test/examples/assets/laravel.png" style="width: 1000px;">
 
 >>>
 
@@ -136,4 +137,17 @@ $ docker exec -it php bash
 
 # 2. vueの作業をする場合
 $ docker exec -it app sh
+```
+
+>>>
+
+
+<p style="font-size: 20px ;">今回はDockerを使用するため、どのコンテナで作業するか明確にするために以下のような表示をします</p>
+
+```bash
+# Laravelの作業
+[phpコンテナ] $ php artisan migrate
+
+# Vueの作業
+[appコンテナ] $ npm run serve
 ```

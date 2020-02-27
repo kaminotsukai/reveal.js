@@ -1,6 +1,14 @@
 
-## 連絡先一覧ページ (7)
-<span style="font-size: 30px">今回はElementUIというUIコンポーネントでサクッと実装します</span>
+## 画面開発
+<span style="font-size: 30px">今回はVuetifyというUIコンポーネントでサクッと実装します</span>
+
+>>>
+
+<img src="./test/examples/assets/demo1.png" style="width: 900px;">
+
+>>>
+
+<img src="./test/examples/assets/demo2.png" style="width: 900px;">
 
 >>>
 
@@ -25,203 +33,921 @@ vue
 
 >>>
 
-ElementUIのインストール
-
 ```bash
-[appコンテナ内]$ npm install element-ui
+ $ npm install @mdi/font -D
 
+ $ npm install @mdi/js file-loader material-design-icons-iconfont --save-dev
 ```
 
 >>>
 
-ElementUIの導入
-
-<p style="font-size: 20px; color: green; ">rontend/src/main.js</p>
+vuetifyのインストール
 
 ```javascript
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import ElementUI from 'element-ui' // 追記
-import 'element-ui/lib/theme-chalk/index.css'　// 追記
 
-Vue.use(ElementUI, { size: 'small'})　// 追記
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import '@mdi/font/css/materialdesignicons.css'
+Vue.use(Vuetify)
 
 Vue.config.productionTip = false
 
 new Vue({
+  vuetify: new Vuetify(),
   router,
   render: h => h(App),
 }).$mount('#app')
+
 ```
+
+
 
 >>>
 
-サイドバーコンポーネントの作成
-<p style="font-size: 20px; color: green; ">vue/src/components/sidebar.vue</p>
+headerコンポーネントの作成
 
-```html
+```javascript
 <template>
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      <el-menu 
-      :default-openeds="['1', '3']"
-      :default-active="activeIndex"
-      mode="history"
-      router
-      >
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>連絡先登録アプリ</template>
-          <el-menu-item-group>
-            <template slot="title">基本機能</template>
-            <el-menu-item index="1-1" :route="{ name: 'create_contact' }">連絡先を登録する</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-      </el-menu>
-    </el-aside>
+  <v-card
+    color="grey lighten-4"
+    flat
+    tile
+    height="100"
+  >
+    <v-toolbar dense>
+
+      <v-toolbar-title>Contact App</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn text>
+        <router-link to="/">連絡先一覧</router-link>
+      </v-btn>
+
+      <v-btn text>
+        <router-link to="/create/contact">連絡先を登録する</router-link>
+      </v-btn>
+    </v-toolbar>
+  </v-card>
 </template>
 
 <script>
 export default {
+    
+}
+</script>
+```
+
+>>>
+
+index-contact/save-contactにヘッダーを導入
+
+```html
+<template>
+    <div>
+        <Header/>
+        <!-- // 中略 -->
+    </div>
+</template>
+
+<script>
+import Header from '../../components/header'
+
+export default {
+    components: {
+        Header
+    }
+}
+</script>
+```
+
+>>>
+
+index-contactでAPIから連絡先一覧データを取得します
+
+```javascript
+import Header from '../../components/header'
+import axios from 'axios' // 追記
+const BASE_URL = 'http://localhost:8000'
+
+export default {
+    components: {
+        Header
+    },
     data() {
-        return {
-            activeIndex: ''
+      contacts: []
+    },
+    // ここから
+    methods: {
+        axiosGetContacts() {
+            let endpoint = BASE_URL + '/api/contact'
+            axios.get(endpoint)
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(error => {
+                    console.warn(error)
+                })
         }
     },
     mounted() {
-        this.activeIndex = this.$route.name;
+        this.axiosGetContacts()
     }
+    // 
+    
 }
-</script>
+```
+
+
+CORSエラーが発生
+
+<img src="./test/examples/assets/cors2.png" style="width: 900px;">
+
+>>>
+
+Cors(オリジン間リソース共有)とは
+<p style="font-size: 20px;">Webページ上の制限されたリソースを、リソースが提供されたドメイン以外の別のドメインから要求できるようにする仕組み</p>
+<p style="font-size: 20px;">スキーム、ホスト、ポートがすべて一致した場合のみ、同じオリジンであると見なされます</p>
+<img src="./test/examples/assets/cors.jpg" style="width: 600px;">
+
+>>>
+
+Corsミドルウェアの作成
+<p style="font-size: 20px;">Preflight Request用にレスポンスにアクセスを許容するヘッダーをつける役割を持ちます</p>
+
+```bash
+# PHPコンテナの中に入る
+$ docker exec -it php bash
+
+# ミドルウェア作成
+[phpコンテナ内]$ php artisan make:middleware Cors
 ```
 
 >>>
 
+Corsミドルウェア編集
+<p style="font-size: 20px; color: green; ">app\Http\Middleware\Cors.php</p>
 
-ページの作成
-<p style="font-size: 20px; color: green; ">vue/src/pages/contact/index-contact.vue</p>
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class Cors
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+        return $next($request)
+            ->header('Access-Control-Allow-Origin', 'http://localhost:8080')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+    }
+}
+```
+
+>>>
+
+作成したミドルウェアをKernel.phpに追加
+<p style="font-size: 20px; color: green; ">app\Http\Kernel.php</p>
+
+```php
+protected $routeMiddleware = [
+    'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
+    'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+    'can'           => \Illuminate\Auth\Middleware\Authorize::class,
+    'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
+    'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
+    'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    'cors'          => \App\Http\Middleware\Cors::class, // 追加
+];
+```
+
+>>>
+
+ルート編集
+<p style="font-size: 20px; color: green; ">routes/api.php</p>
+
+```php
+<?php
+
+use Illuminate\Http\Request;
+
+Route::middleware(['cors'])->group(function () {
+
+    // ここから追記
+    Route::options('/{any}', function() {
+        return response()->json();
+    })->where('any', '.*');
+    // ここまで
+
+    Route::get('contacts', 'ContactController@index');
+    Route::post('contacts', 'ContactController@store');
+    Route::delete('contacts/{id}', 'ContactController@destroy'); 
+    Route::get('contacts/{id}', 'ContactController@edit'); 
+    Route::put('contacts/{id}', 'ContactController@update');
+});
+```
+
+>>>
+
+ブラウザでCORSエラーがでないか確認してみる
+
+
+>>>
+
+取得できたことを確認できたら
+
+>>>
 
 ```html
 <template>
-  <el-container 
-    style="border: 1px solid #eee; min-height:100vh;"
-  >
-
-      <el-header style="text-align: right; font-size: 12px">
-        <el-dropdown>
-            <i class="el-icon-setting" style="margin-right: 15px"></i>
-            <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>View</el-dropdown-item>
-            <el-dropdown-item>Add</el-dropdown-item>
-            <el-dropdown-item>Delete</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>
-      </el-header>
-    
-    <el-container>
-        <Sidebar/>
-        <el-main>
-            <el-table
-            :data="contacts" 
-            style="width: 100%"
-            empty-text="データが存在しません"
+  <div>
+    <Header/>
+    <v-container>
+      <v-data-table
+          :headers="headers"
+          :items="contacts"
+          class="elevation-1"
+        >
+        <template v-slot:item.image="{ item }">
+          <v-avatar
+            size="36px"
+          >
+            <img
+              v-if="item.avatar != ''"
+              :src="item.avatar"
             >
-            <el-table-column prop="last_name" label="姓" width="140">
-            </el-table-column>
-            <el-table-column prop="first_name" label="名" width="120">
-            </el-table-column>
-            <el-table-column prop="gender" label="性別" width="100" :formatter="genderFormatter">
-            </el-table-column>
-            <el-table-column prop="phone_number" label="電話番号" width="140">
-            </el-table-column>
-            <el-table-column prop="email" label="Eメール" width="160">
-            </el-table-column>
-            <el-table-column prop="address" label="住所" width="200">
-            </el-table-column>
-            <el-table-column prop="birthday" label="誕生日" width="140">
-            </el-table-column>
-            <el-table-column prop="id" label="操作" width="100">
-                <template>
-                <el-button type="primary" icon="el-icon-edit" circle></el-button>
-                <el-button type="danger" icon="el-icon-delete" circle></el-button>
-                </template>
-            </el-table-column>
-            </el-table>
-        </el-main>
-    </el-container>
-  </el-container>
+            <v-icon
+              v-else
+              color="grey"
+            ></v-icon>
+          </v-avatar>
+        </template>
+        <template v-slot:item.full_name="{ item }">
+          {{ item.full_name }}
+        </template>
+        <template v-slot:item.phone_number="{ item }">
+          {{ item.phone_number }}
+        </template>
+        <template v-slot:item.email="{ item }">
+          {{ item.email }}
+        </template>
+        <template v-slot:item.gender="{ item }">
+          {{ item.gender | genderFilter}}
+        </template>
+        <template v-slot:item.register_date="{ item }">
+          {{ item.created_at }}
+        </template>
+          <template v-slot:top>
+            <v-toolbar flat color="white">
+              
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-icon
+              small
+              class="mr-4"
+              @click="editItem(item)"
+            >
+              edit
+            </v-icon>
+            
+            <v-icon
+              small
+              @click="deleteItem(item)"
+            >
+              delete
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-container>
+  </div>
 </template>
 
 <script>
-import Sidebar from '../../components/sidebar'
+import Header from '../../components/header'
+import axios from 'axios'
+const BASE_URL = 'http://localhost:8000'
 
 export default {
-  components: {
-    Sidebar,
-  },
-  data() {
-    return {
-      contacts: [{
-            last_name: '山田',
-            first_name: '真司',
-            gender: '1',
-            phone_number: '080xxxxxxxx',
-            email: 'yamada@gmail.com',
-            address: '東京都江戸川区',
-            birthday: '1990-06-01',
-          },{
-            last_name: '斎藤',
-            first_name: '義一',
-            gender: '1',
-            phone_number: '080xxxxxxxx',
-            email: 'saito@gmail.com',
-            address: '東京都江戸川区',
-            birthday: '1990-06-01',
-          },{
-            last_name: '山田',
-            first_name: '佳代子',
-            gender: '2',
-            phone_number: '080xxxxxxxx',
-            email: 'kayo@gmail.com',
-            address: '東京都江戸川区',
-            birthday: '1997-06-01',
-          }]
-    }
-  },
-  methods: {
-    genderFormatter(row) {
-      let gender = ''
-
-      switch(row.gender) {
-        case 1:
-          gender = '男性'
-          break
-        case 2:
-          gender = '女性'
-          break
-        default:
-          gender = '両方'
-          break
-      }
-
-      return gender
+    components: {
+        Header
     },
-  }
+    data: () => ({
+    contacts: [],
+    headers: [
+      {
+        text: '画像', align: 'start',
+        value: 'image', 
+      },
+      { 
+        text: '名前', 
+        value: 'full_name', 
+      },
+      { 
+        text: '電話番号(携帯)', 
+        value: 'phone_number', 
+      },
+      { 
+        text: 'Eメール', 
+        value: 'email', 
+      },
+      { 
+        text: '性別',
+        value: 'gender', 
+      },
+      { 
+        text: '誕生日',
+        value: 'birthday',
+      },
+      { 
+        text: '操作', 
+        value: 'actions',
+      },
+    ],
+  }),
+    // ここから
+  methods: {
+      axiosGetContacts() {
+          let endpoint = BASE_URL + '/api/contact'
+          axios.get(endpoint)
+              .then(res => {
+                this.contacts = res.data.contacts
+                console.log(res)
+              })
+              .catch(error => {
+                  console.warn(error)
+              })
+      },
+      editItem() {
+        // stub
+      },
+      deleteItem() {
+        // stub
+      }
+    },
+    filters: {
+      genderFilter(val) {
+        let gender = ''
+
+        switch(val) {
+          case 1:
+            gender = '男性'
+            break
+          case 2:
+            gender = '女性'
+            break
+          case 3:
+            gender = '両方'
+            break;
+          default:
+            gender = ''
+            break;
+        }
+
+        return gender
+      }
+    },
+    mounted() {
+        this.axiosGetContacts()
+    }
+    // 
 }
 </script>
 
-<style>
-  .el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    line-height: 60px;
-  }
-
-  .el-aside {
-    color: #333;
-  }
-</style>
 ```
 
 >>>
 
-ブラウザで確認してみよう
+削除
+
+```javascript
+editContact() {
+  // stub
+},
+deleteContact(contact) {
+  if (!confirm('削除しますがよろしいでしょうか')) return
+  
+  this.axiosDeleteContact(contact.id)
+},
+axiosDeleteContact(id) {
+  let endpoint = BASE_URL + `/api/contact/${id}`
+
+  axios.delete(endpoint) 
+    .then(res => {
+      console.log(res)
+      this.refresh()
+    })    
+    .catch(error => {
+      console.log(error)
+    })
+},
+refresh() {
+  this.axiosGetContacts()
+}
+```
+
+>>>
+
+遅いのでローディングバーをつける
+
+components/loading.vue
+
+```html
+<template>
+    <div>
+        <div class="text-xs-center" v-if="loading">
+            <v-overlay value="true">
+            <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+            ></v-progress-circular>
+            </v-overlay>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    props: {
+        loading: Boolean
+    }
+    
+}
+</script>
+```
+
+>>>
+
+```html
+<template>
+  <div>
+    <Header/>
+    <v-container>
+    <!--  ここから-->
+      <Loading
+      :loading="loading"
+      ></Loading>
+      <!-- ここまで -->
+      <v-data-table
+          :headers="headers"
+          :items="contacts"
+          class="elevation-1"
+        >
+      // 中略   
+  </div>
+</template>
+
+<script>
+import Header from '../../components/header'
+import Loading from '../../components/loading' //追記
+import axios from 'axios'
+const BASE_URL = 'http://localhost:8000'
+
+export default {
+    components: {
+        Header,
+        Loading // 追記
+    },
+    data: () => ({
+    contacts: [],
+    loading: false, // 追記
+    // 中略
+  methods: {
+        axiosGetContacts() {
+            let endpoint = BASE_URL + '/api/contact'
+            this.loading = true
+
+            axios.get(endpoint)
+                .then(res => {
+                  this.contacts = res.data.contacts
+                  console.log(res)
+                })
+                .catch(error => {
+                  this.loading = false
+                  console.warn(error)
+                })
+                .finally(() => {
+                  this.loading = false
+                })
+        },
+        deleteContact(contact) {
+          if (!confirm('削除しますがよろしいでしょうか')) return
+          
+          this.axiosDeleteContact(contact.id)
+        },
+        axiosDeleteContact(id) {
+          this.loading = true
+          let endpoint = BASE_URL + `/api/contact/${id}`
+
+          axios.delete(endpoint) 
+            .then(res => {
+              console.log(res)
+              this.loading = false
+              this.refresh()
+            })    
+            .catch(error => {
+              this.loading = false
+              console.log(error)
+            })
+        },
+        refresh() {
+          this.axiosGetContacts()
+        }
+    },
+    // 中略
+}
+```
+
+>>>
+
+
+>>>
+
+連絡先登録画面
+
+```html
+<template>
+    <div>
+        <Header/>
+        <v-container>
+            <v-row>
+                <v-col cols="12" sm="6">
+                <v-text-field
+                    v-model="contact.first_name"
+                    label="姓"
+                    outlined
+                ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" sm="6">
+                <v-text-field
+                    v-model="contact.last_name"
+                    label="名"
+                    outlined
+                ></v-text-field>
+                </v-col>
+            </v-row>
+            <v-radio-group v-model="contact.gender" row>
+                <v-radio label="男性" :value="1"></v-radio>
+                <v-radio label="女性" :value="2"></v-radio>
+                <v-radio label="両方" :value="3"></v-radio>
+            </v-radio-group>
+            <v-text-field
+                v-model="contact.phone_number"
+                label="電話番号(携帯)"
+                single-line
+                outlined
+            ></v-text-field>
+            <v-text-field
+                v-model="contact.house_phone_number"
+                label="電話番号(自宅)"
+                single-line
+                outlined
+            ></v-text-field>
+            <v-text-field
+                v-model="contact.email"
+                label="Eメール"
+                single-line
+                outlined
+            ></v-text-field>
+            <v-text-field
+                v-model="contact.address"
+                outlined
+                label="住所"
+            ></v-text-field>
+            <v-text-field
+                v-model="contact.birthday"
+                label="誕生日"
+                single-line
+                outlined
+            ></v-text-field>
+            <v-textarea
+                v-model="contact.memo"
+                label="メモ"
+                auto-grow
+                outlined
+                rows="3"
+                row-height="25"
+            ></v-textarea>
+            <v-file-input accept="image/*" label="avatar"></v-file-input>           
+            <div class="my-5">
+                <v-btn large>登録</v-btn>
+            </div>
+        </v-container>
+    </div>
+
+</template>
+
+<script>
+import Header from '../../components/header'
+
+export default {
+    components: {
+        Header
+    },
+    data() {
+        return {
+            contact: {
+              'first_name': '',
+              'last_name': '',
+              'avatar': '',
+              'gender': '',
+              'phone_number': '',
+              'house_phone_number': '',
+              'email': '',
+              'address': '',
+              'birthday': '',
+              'memo': ''
+            },
+        }
+    }
+    
+}
+</script>
+
+```
+
+>>>
+
+登録
+
+```html
+<template>
+    <div>
+        <Header/>
+        <v-container>
+        <!--  ローディングバー追加-->
+            <Loading
+            :loading="loading"
+            ></Loading>
+        <!--  -->
+            <v-row>
+        <!-- 中略 -->
+            <v-file-input accept="image/*" label="avatar"></v-file-input>           
+            <div class="my-5">
+            <!--saveContact追加  -->
+                <v-btn large @click="saveContact()">登録</v-btn>
+            </div>
+        </v-container>
+    </div>
+
+</template>
+
+<script>
+import Header from '../../components/header'
+// axios とローディングバー追記
+import Loading from '../../components/loading'
+import axios from 'axios'
+
+const BASE_URL = 'http://localhost:8000'
+
+export default {
+    components: {
+        Header,
+        Loading // 追記
+    },
+    data() {
+        return {
+            loading: false,　// 追記
+            contact: {
+              'first_name': '',
+              'last_name': '',
+              'avatar': '',
+              'gender': '',
+              'phone_number': '',
+              'house_phone_number': '',
+              'email': '',
+              'address': '',
+              'birthday': '',
+              'memo': ''
+            },
+        }
+    },
+    methods: {
+        // 保存処理
+        saveContact() {
+            if (!confirm('この内容で登録してもよろしいでしょうか')) return 
+            this.axiosSaveContact()
+        },
+        axiosSaveContact() {
+            this.Loading = true
+            let endpoint = BASE_URL + '/api/contact'
+            const param = {
+                'contact': this.contact
+            }
+            axios.post(endpoint, param)
+                .then(res => {
+                    console.log(res)
+                    this.$router.push({name: 'contacts'})
+                })
+                .catch(error => {
+                    this.Loading = false
+                    console.warn(error)
+                })
+                .finally(() => {
+                    this.Loading = false
+                })
+        }
+    }
+    
+}
+</script>
+```
+
+>>>
+
+保存した順にみたいので変更
+
+
+```php
+$contacts = ContactResource::collection(Contact::latest()->get());
+```
+
+>>>
+
+編集
+保存画面と同じ画面を使用するため同じコンポーネントを指定します
+
+```javascript
+const routes = [
+    {
+        path: '/',
+        name: 'contacts',
+        component: IndexContact
+    },
+    {
+        path: '/create/contact',
+        name: 'create_contact',
+        component: SaveContact
+    },    
+    {
+        path: '/edit/contact/:id',
+        name: 'edit_contact',
+        component: SaveContact
+    },
+]
+```
+
+
+>>>
+
+
+
+```javascript
+// 編集画面への遷移処理を追加します
+editContact(contact) {
+  let id = contact.id
+  this.$router.push({name: 'edit_contact', params: { id: id }})
+},
+deleteContact(contact) {
+  if (!confirm('削除しますがよろしいでしょうか')) return
+  
+  this.axiosDeleteContact(contact.id)
+},
+```
+
+
+>>>
+
+このままだと、異なるURLで新規保存をするだけになります。
+なので編集ということを判別させていきます
+
+>>>
+
+データの取得
+
+```javascript
+    computed: {
+        newContact() {
+            const routeParam = this.$route.params.id + ''
+            return !routeParam.match(/^\d+$/)
+        },
+        saveContactTitle() {
+            return this.newContact ? '登録' : '更新'
+        },
+        id () {
+            return this.$route.params.id
+        }
+    },
+    methods: {
+        saveContact() {
+            if (!confirm('この内容で登録してもよろしいでしょうか')) return 
+            this.axiosSaveContact()
+        },
+        axiosSaveContact() {
+            this.Loading = true
+            let endpoint = BASE_URL + '/api/contact'
+            const param = {
+                'contact': this.contact
+            }
+            axios.post(endpoint, param)
+                .then(res => {
+                    console.log(res)
+                    this.$router.push({name: 'contacts'})
+                })
+                .catch(error => {
+                    this.Loading = false
+                    console.warn(error)
+                })
+                .finally(() => {
+                    this.Loading = false
+                })
+        },
+        axiosGetContact(id) {
+          this.loading = true
+          const endPoint = BASE_URL + `/api/contact/${id}`
+          
+          axios.get(endPoint)
+            .then(res => {
+                console.log(res)
+                this.contact = res.data.data
+            })
+            .catch(error => {
+                this.loading = false
+                console.warn(error)
+            })
+            .finally(() => {
+                this.loading = false
+            })
+        }
+    },
+    created() {
+      if (!this.newContact) {
+          this.axiosGetContact(this.id)
+    }
+  } 
+    
+```
+
+
+>>>
+
+
+データの編集
+```javascript
+  computed: {
+        newContact() {
+            const routeParam = this.$route.params.id + ''
+            return !routeParam.match(/^\d+$/)
+        },
+        saveContactTitle() {
+            return this.newContact ? '登録' : '更新'
+        },
+        id () {
+            return this.$route.params.id
+        }
+    },
+    methods: {
+      // 更新か新規作成か判別
+        saveContact() {
+            if (!confirm(`この内容で${this.saveContactTitle}してもよろしいでしょうか`)) return 
+            this.loading = true
+            const id = this.id
+
+            if (this.newContact) {
+                this.axiosSaveContact()
+            } else {
+                this.axiosUpdateContact(id)
+            }
+        },
+        // 更新用の処理
+        axiosUpdateContact(id) {
+            const endPoint = BASE_URL + `/api/contact/${id}`
+            const param = {
+                'contact': this.contact
+            }
+
+            axios.put(endPoint, param)
+                .then(res => {
+                    console.log(res)
+                    this.$router.push({name: 'contacts'})
+                })
+                .catch(error => {
+                    this.loading = false
+                    console.warn(error)
+                })
+                .finally(() => {
+                    this.loading = false
+                })
+        },
+    },
+```

@@ -59,7 +59,7 @@ export default {
 
 CORSエラーが発生
 
-<img src="./test/examples/assets/cors2.jpg" style="width: 600px;">
+<img src="./test/examples/assets/cors2.png" style="width: 900px;">
 
 >>>
 

@@ -5,12 +5,13 @@
 >>>
 
 連絡先登録ページと同じファイル
-<p style="font-size: 30px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 20px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```html
 <!--  一部抜粋してます -->
 <el-form-item>
-    <!-- 「登録」から{{ saveContactTitle }}に変更 -->
+    <!-- 登録　=> saveContactTitle -->
+    <!-- axiosSaveContact => saveContactに変更 -->
     <el-button type="primary" @click="saveContact()">{{ saveContactTitle }}</el-button>
 </el-form-item>
 ```
@@ -18,11 +19,18 @@
 >>>
 
 スクリプト部分
-<p style="font-size: 30px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
+<p style="font-size: 30px">URLで編集か登録かを判別して、それぞれの処理を書いていきます</p>
+<p style="font-size: 20px; color: green; ">vue/src/pages/contact/save-contact.vue</p>
 
 ```javascript
-<script>
+import Sidebar from '../../components/sidebar'
+import axios from 'axios'
+const BASE_URL = 'http://localhost:8000'
+
 export default {
+  components: {
+    Sidebar,
+  },
   data() {/* 省略 */}
   computed: {
       newContact() {
@@ -54,9 +62,6 @@ export default {
                 this.error(error.response.data.errors)
                 console.warn(error)
             })
-            .finally(() => {
-                this.loading = false
-            })
       },
       saveContact() {
           this.loading = true
@@ -76,6 +81,4 @@ export default {
       }
   } 
 }
-</script>
 ```
-

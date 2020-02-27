@@ -75,7 +75,7 @@
                             <el-input type="textarea" v-model="contacts.memo"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="saveContact()">登録</el-button>
+                            <el-button type="primary" @click="axiosSaveContact()">登録</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -141,9 +141,6 @@ export default {
                 this.error(error.response.data.errors)
                 console.warn(error)
             })
-            .finally(() => {
-                this.loading = false
-            })
       },
       axiosGetContact(id) {
           const endPoint = BASE_URL + `/api/contacts/${id}`
@@ -167,3 +164,5 @@ export default {
 >>>  
 
 登録できるか確認してみよう
+
+
