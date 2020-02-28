@@ -6,6 +6,16 @@
 
 >>>
 
+Vue.jsはJavascriptのフレームワークの一種です
+
+<ul style="font-size: 30px;">
+    <li>気軽に使える：Vue.js はjQueryと同様に、scriptタグを1行書くだけで使い始めることができます。</li>
+    <li>DOM操作を自動的に行ってくれる</li>
+    <li>学習コストが低い。</li>
+</ul>
+
+>>>
+
 Vue.jsプロジェクトの作成
 
 ```bash
@@ -39,18 +49,6 @@ $ docker exec -it app sh
 [appコンテナ]$ npm run serve
 ```
 
->>> vueとは
-
-// 説明
-
-```
-└─src/
-　　├─assets/
-　　├─components/
-　　├─App.vue
-　　└─main.js
-```
-
 >>>
 
 Vueが立ち上がっているか確認
@@ -63,6 +61,12 @@ Vueが立ち上がっているか確認
 
 ### Vue Router導入
 <p style="font-size: 30px">SPAにおける画面遷移を担当するvue-routerを導入していきます。</p>
+
+>>>
+
+SPAとは
+画像
+画像
 
 >>>
 
@@ -130,6 +134,10 @@ new Vue({
 >>>
 
 <p style="font-size: 30px">２. ルートコンポーネントの作成</p>
+
+>>>
+
+<p style="font-size: 30px">`router-view`にindex.jsで定義したコンポーネントが埋め込まれます</p>
 <p style="font-size: 20px; color: green; ">vue/src/App.vue (上書き)</p>
 
 ```html
@@ -150,6 +158,10 @@ export default {
 >>>
 
 <p style="font-size: 30px">3. ページコンポーネントの作成</p>
+
+
+>>>
+
 
 <p style="font-size: 20px; color: green; ">vue/src/pages/contact/index-contact.vue</p>
 

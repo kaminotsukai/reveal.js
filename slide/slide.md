@@ -38,6 +38,14 @@ crowish勉強会
 - axiosを使ったAPI通信の実装ができるようになる
 - corsを理解する
 
+>>>
+
+<img src="./test/examples/assets/demo1.png" style="width: 800px;">
+
+>>>
+
+<img src="./test/examples/assets/demo2.png" style="width: 800px;">
+
 ---
 
 ## Dockerで環境を構築する

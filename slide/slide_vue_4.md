@@ -48,18 +48,8 @@ vue
 
 >>>
 
-<p style="font-size: 30px;">vuetifyが提供してくれているフォントやアイコンを使用する場合必要となります。</p>
-
-
-```bash
-[appコンテナ] $ npm install @mdi/font -D
-
-[appコンテナ] $ npm install @mdi/js file-loader material-design-icons-iconfont --save-dev
-```
-
->>>
-
 vuetifyの導入
+<p style="font-size: 20px; color: green; ">vue/src/main.js</p>
 
 ```javascript
 import Vue from 'vue'
@@ -87,6 +77,11 @@ new Vue({
 >>>
 
 headerコンポーネントの作成
+<p style="font-size: 20px;">headerは様々箇所で使用するため分けて作成します</p>
+
+>>>
+
+<p style="font-size: 20px; color: green; ">vue/src/components/header.vue</p>
 
 ```html
 <template>
@@ -122,7 +117,8 @@ export default {
 
 >>>
 
-index-contact/save-contactにヘッダーを導入
+一覧画面にヘッダーを導入
+<p style="font-size: 20px; color: green; ">vue/src/pages/index-contact.vue</p>
 
 ```html
 <template>
@@ -145,7 +141,16 @@ export default {
 
 >>>
 
-index-contactでAPIから連絡先一覧データを取得します
+ヘッダーがついたか確認
+
+>>>
+
+一覧画面なので一覧データが欲しいです。
+
+
+>>>
+
+APIから連絡先一覧データを取得します
 
 ```javascript
 import Header from '../../components/header'
@@ -180,6 +185,7 @@ export default {
 }
 ```
 
+>>>
 
 CORSエラーが発生
 
@@ -259,6 +265,7 @@ protected $routeMiddleware = [
 >>>
 
 ルート編集
+<p style="font-size: 20px; ">pliflight requestはoptionsメソッドで送信されるのでoptionsに対して200を返却する</p>
 <p style="font-size: 20px; color: green; ">routes/api.php</p>
 
 ```php
@@ -289,9 +296,11 @@ Route::middleware(['cors'])->group(function () {
 
 >>>
 
-取得できたことを確認できたら
+取得できたことを確認できたら表示してみる
 
 >>>
+
+<p style="font-size: 20px; color: green; ">index-contact.vue</p>
 
 ```html
 <template>
@@ -449,12 +458,12 @@ export default {
     // 
 }
 </script>
-
 ```
 
 >>>
 
 削除
+<p style="font-size: 20px; color: green; ">index-contact.vue</p>
 
 ```javascript
 editContact() {
@@ -486,7 +495,8 @@ refresh() {
 
 遅いのでローディングバーをつける
 
-components/loading.vue
+<p style="font-size: 20px; color: green; ">components/loading.vue</p>
+
 
 ```html
 <template>
@@ -514,6 +524,9 @@ export default {
 ```
 
 >>>
+
+一覧画面にローディングバーを導入
+<p style="font-size: 20px; color: green; ">index-contact.vue</p>
 
 ```html
 <template>
@@ -597,10 +610,12 @@ export default {
 
 >>>
 
+連絡先登録画面
 
 >>>
 
-連絡先登録画面
+
+<p style="font-size: 20px; color: green; ">save-contact.vue</p>
 
 ```html
 <template>
@@ -706,7 +721,8 @@ export default {
 
 >>>
 
-登録
+登録画面にローディングバーをつける
+<p style="font-size: 20px; color: green; ">save-contact.vue</p>
 
 ```html
 <template>
@@ -793,17 +809,31 @@ export default {
 
 >>>
 
-保存した順にみたいので変更
+実際に登録してみよう
 
+>>>
+
+<p style="font-size: 30px;">現状、登録したものが一覧の最後尾にきてしまうので最新のものから取得するようにしましょう。</p>
+<p style="font-size: 20px; color: green; ">app/Http/Controller/ContactController.php</p>
 
 ```php
-$contacts = ContactResource::collection(Contact::latest()->get());
+public function index()
+{
+  // all() -> latest
+    $contacts = ContactResource::collection(Contact::latest()->get());
+
+    return response()->json(['contacts' => $contacts]);
+}
 ```
 
 >>>
 
-編集
-保存画面と同じ画面を使用するため同じコンポーネントを指定します
+編集画面開発
+
+>>>
+
+<p style="font-size: 30px;">保存画面と同じ画面を使用するため同じコンポーネントを指定します</p>
+<p style="font-size: 20px; color: green; ">router/index.js</p>
 
 ```javascript
 const routes = [
@@ -828,7 +858,7 @@ const routes = [
 
 >>>
 
-
+<p style="font-size: 20px; color: green; ">index-contact.vue</p>
 
 ```javascript
 // 編集画面への遷移処理を追加します
@@ -847,11 +877,14 @@ deleteContact(contact) {
 >>>
 
 このままだと、異なるURLで新規保存をするだけになります。
+
 なので編集ということを判別させていきます
 
 >>>
 
-データの取得
+編集画面か保存画面かどうかを判定する
+<p style="font-size: 20px;">URLから判定します</p>
+<p style="font-size: 20px; color: green; ">save-contact.vue</p>
 
 ```javascript
     computed: {
@@ -920,7 +953,9 @@ deleteContact(contact) {
 >>>
 
 
-データの編集
+データの更新処理
+
+
 ```javascript
   computed: {
         newContact() {
