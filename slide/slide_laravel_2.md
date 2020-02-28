@@ -3,12 +3,25 @@
 
 >>>
 
+CRUDとは
+<p style="font-size: 20px;">データ永続性のための基本機能の名称</p>
+
+- create (新規作成)
+- read (読み取り)
+- update (更新)
+- delete (削除)
+
+
+>>>
+
 
 Laravelの処理の流れ
 
 <img src="./test/examples/assets/laravel_image.png" style="width: 800px;">
 
 >>>
+
+CRUDに必要な物を先に作成してしまいます
 
 ```bash
 # ヘルプで確認 
@@ -20,28 +33,23 @@ $ php artisan make:model Models/Contact --api -fm
 
 >>>
 
-<p style="font-size: 20px;">HTMLテンプレートを返却するメソッドを除外したリソースコントローラが作成される</p>
-<p style="font-size: 20px;">テストデータ作成するためのfactoryファイル</p>
-<p style="font-size: 20px;">マイグレーションファイル</p>
+<ul style="font-size: 30px;">
+    <li>ApiController: HTMLテンプレートを返却するメソッドを除外したリソースコントローラが作成される</li>
+    <li>factory: テストデータ作成するためのファイル</li>
+    <li>migration: DBテーブルの設計図</li>
+</ul>
 
 >>>
 
-
-
-
 マイグレーション
+<p style="font-size: 20px;">テーブル設計図のようなもので、このファイルをマイグレートすることで接続してるDBに記述したテーブルが作成されます
+</p>
 
-<p style="font-size: 20px;">マイグレーションファイルの作成</p>
-
-```bash
-[phpコンテナ]$ php artisan make:migration create_contacts_table
-Created Migration: xxxx_xx_xx_xxxxxx_create_contacts_table
-```
 
 >>>
 
 マイグレーションファイルの編集
-<p style="font-size: 20px;">コマンドを実行したら、作成されたファイルを開いてup()の中身を以下のように変更します。</p>
+<p style="font-size: 20px;">作成されたマイグレーションファイルを開いてup()の中身を以下のように変更します。</p>
 
 <p style="font-size: 20px; color: green; ">database/migrations/xxxx_xx_xx_xxxxxx_create_contacts_table.php</p>
 
@@ -83,7 +91,7 @@ class CreateContactsTable extends Migration
 >>>
 
 マイグレーション
-<p style="font-size: 20px;">テーブルの作成</p>
+<p style="font-size: 20px;">マイグレーションファイルを元にテーブルを作成</p>
 
 ```
 [phpコンテナ]$ php artisan migrate
@@ -92,8 +100,11 @@ class CreateContactsTable extends Migration
 >>>
 
 モデルの作成
+<p style="font-size: 20px;">モデルはMVCアーキテクチャにおいてDBとのやりとりを担当しています</p>
+
+>>>
+
 <p style="font-size: 20px; color: green; ">app/Models/Contact/php</p>
-<p style="font-size: 20px; color: green; ">Modelsというディレクトリを作成して管理しやすくしています</p>
 
 ```php
 <?php
@@ -108,6 +119,7 @@ class Contact extends Model
 {
     protected $guarded = ['id'];
 
+    // テーブルにはない独自の属性を追加することもできます
     public function getPathAttribute(): string
     {
         return asset("/contact/$this->id");
@@ -126,10 +138,13 @@ class Contact extends Model
 
 
 テストデータの作成
-<p style="font-size: 20px; color: green; ">Factoryを使用してダミーデータを作成していきます</p>
+<p style="font-size: 20px;">Factoryを使用してダミーデータを作成していきます</p>
+<p style="font-size: 20px;">ダミーデータを作成することでテスト(確認がしやすくなります)</p>
 
 >>>
 
+<p style="font-size: 20px;">$fakerというダミーデータを提供してくれるメソッドを使用して作成していきます</p>
+<p style="font-size: 20px;">もちろん、関数も記述可能です</p>
 <p style="font-size: 20px; color: green; ">databases/factories/ContactFactory.php</p>
 
 ```php
@@ -155,7 +170,7 @@ $factory->define(Contact::class, function (Faker $faker) {
 
 >>>
 
-<p style="font-size: 20px; color: green; ">DatabaseSeederに登録することで作成することができます</p>
+<p style="font-size: 20px;">DatabaseSeederに登録することで特定のコマンド時に実行され作成することができます</p>
 <p style="font-size: 20px; color: green; ">databases/seeds/DatabaseSeeder.php</p>
 
 ```php
@@ -175,18 +190,29 @@ class DatabaseSeeder extends Seeder
 
 ```
 
->>>
+<p style="font-size: 20px;">DatabaseSeederに登録されているファイルを実行するコマンド</p>
 
 ```bash
-$ php artisan db:seed
-
+[phpコンテナ内] $ php artisan db:seed
 ```
 
 >>>
 
-ルート定義
+phpMyAdminで登録されているか確認する
 
-<p style="font-size: 20px; color: green; ">以下のように記述してあげることで紐づいたCRUDのアクションにルーティングされるようになります</p>
+http://localhost:1234
+
+
+>>>
+
+ルート定義
+<p style="font-size: 20px;">ここまででデータ周りのタスクは完了しました</p>
+<p style="font-size: 20px;">リクエストを受けて、適切な処理に渡す担当です</p>
+
+
+>>>
+
+<p style="font-size: 20px;">以下のように記述してあげることで紐づいたCRUDのアクションにルーティングされるようになります</p>
 <p style="font-size: 20px; color: green; ">routes/api.php</p>
 
 ```php
@@ -200,10 +226,12 @@ Route::apiResource('contact', 'ContactController');
 
 >>>
 
+<p style="font-size: 20px;">以下のコマンドを叩くと現在登録されているルーティングを確認することができます</p>
+<p style="font-size: 20px;">つまり、`GET .../api/contact`にアクセスするとContactコントローラーのindexメソッドにリクエストが渡されるようになります</p>
 
 ```bash
-$ php artisan route:list
-root@fc294416dd76:/var/www/backend# php artisan route:list
+[phpコンテナ内]$ php artisan route:list
+
 +--------+-----------+-----------------------+-----------------+------------------------------------------------+--------------+
 | Domain | Method    | URI                   | Name            | Action                                         | Middleware   |
 +--------+-----------+-----------------------+-----------------+------------------------------------------------+--------------+
@@ -220,6 +248,11 @@ root@fc294416dd76:/var/www/backend# php artisan route:list
 
 >>>
 
+一覧取得APIの実装
+<p style="font-size: 20px;">一覧取得はContactControllerのindexメソッドで処理します</p>
+
+>>>
+
 <p style="font-size: 20px;">一覧取得API</p>
 
 ```php 
@@ -233,30 +266,37 @@ public function index()
 
 >>>
 
-<p style="font-size: 20px;">RestClientで確認してみよう</p>
+処理のイメージ
+<img src="./test/examples/assets/model.png" style="width: 800px;">
 
+>>>
+
+RestClientで確認してみよう
+<p style="font-size: 20px;">APIのテストをする際によく使用されるツールです。</p>
+
+<ul style="font-size: 30px;">
+    <li>postman</li>
+    <li>yet another rest client (chromeの拡張機能)</li>
+</ul>
+
+>>>
+
+確認してみる
+<p style="font-size: 20px;">statusが200/データが返却されると正常に動いています</p>
+<img src="./test/examples/assets/rest_get.png" style="width: 800px;">
 
 
 >>>
 
-<p style="font-size: 20px;">登録してみよう</p>
-<p style="font-size: 20px;">以下がリクエストに必要なものになります</p>
-
-```php
-$table->string('first_name', 20);
-$table->string('last_name', 20);
-$table->tinyInteger('gender');
-$table->string('phone_number');
-$table->string('house_phone_number')->nullable();
-$table->string('email', 255)->nullable();
-$table->string('address')->nullable();
-$table->string('birthday')->nullable();
-$table->string('memo', 400)->nullable();
-```
+残りのAPI開発
+<p style="font-size: 20px;">新規作成/編集/削除を作成していきます</p>
 
 >>>
 
+<p style="font-size: 20px; color: green; ">app/Http/Controller/ContactController.php</p>
+
 ```php
+// 中略
 public function store(Request $request)
 {
     $contact = $request->contact;
@@ -268,7 +308,9 @@ public function store(Request $request)
 
 >>>
 
-<p style="font-size: 20px;">以下のリクエストで確認してみましょう</p>
+<p style="font-size: 20px;">以下のリクエストをrest clientで確認してみましょう</p>
+
+<p style="font-size: 20px;">payloadという箇所にこれを入力してください</p>
 
 ```
 <!-- payload -->
@@ -314,13 +356,13 @@ use Illuminate\Foundation\Http\FormRequest;
 class SaveContactRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * 認証機能がある場合に使用します
      *
      * @return bool
      */
     public function authorize()
     {
-        return true;
+        return true; // false -> true
     }
 
     /**
@@ -350,6 +392,8 @@ class SaveContactRequest extends FormRequest
 >>>
 
 フォームリクエストの導入
+
+<p style="font-size: 20px; color: green; ">app/Http/Controller/ContactController.php</p>
 
 ```php
 <?php
@@ -387,6 +431,7 @@ class ContactController extends Controller
 >>>
 
 確認してみましょう
+<p style="font-size: 20px;">422エラーが出ると成功です</p>
 
 ```bash
 {
@@ -406,20 +451,12 @@ class ContactController extends Controller
 
 >>>
 
-
-<p style="font-size: 20px">モデル(Eloquentなど)は特定のデータベーステーブルと対応します。</p>
-<p style="font-size: 20px">これはデータの取得するのに開発者がSQLを意識しなくてもPHP風に操作することを可能にします</p>
-<p style="font-size: 20px; color: green; ">app/Http/Controllers/ContactController.php</p>
-
-
->>>
-
 <img src="./test/examples/assets/restclient.png" style="width: 800px;">
 
 >>>
 
-編集機能の実装
-<p style="font-size: 20px; color: green; ">idを元にContactを取得してくれる</p>
+編集機能
+<p style="font-size: 20px;">idを元にContactを取得してくれる</p>
 
 ```php
 // 編集用データの取得
@@ -440,7 +477,7 @@ public function update(SaveContactRequest $request, Contact $contact)
 
 >>>
 
-削除
+削除機能
 
 ```php
 public function destroy(Contact $contact)
@@ -454,6 +491,75 @@ public function destroy(Contact $contact)
 
 >>>
 
+リソースを作成する
+<p style="font-size: 20px">リソースとはレスポンスのデータをいい感じに整形してくれる役割を持っています</p>
+
+>>>
+
+
+リソースの作成
+
+```bash
+$ php artisan make:resource ContactResource
+
+```
+
+>>>
+
+<p style="font-size: 20px; color: green;">app/Http/Resources/ContactResource.php</p>
+
+```php
+public function toArray($request)
+{
+    // return parent::toArray($request);
+    return [
+        'id' => $this->id,
+        'first_name' => $this->first_name,
+        'last_name' => $this->last_name,
+        'full_name' => $this->full_name,
+        'avatar' => $this->avatar,
+        'gender' => $this->gender,
+        'phone_number' => $this->phone_number,
+        'house_phone_number' => $this->house_phone_number,
+        'email' => $this->email,
+        'address' => $this->address,
+        'birthday' => $this->birthday,
+        'memo' => $this->memo,
+        'path' => $this->path,
+        'created_at' => $this->created_at->diffForHumans()
+    ];
+}
+
+```
+
+>>>
+
+コントローラーに導入します
+<p style="font-size: 20px; color: green;">app/Http/Controller/ContactController.php</p>
+
+```php
+
+public function index()
+{
+    // 1. 書き換える
+    $contacts = ContactResource::collection(Contact::all());
+
+    return response()->json(['contacts' => $contacts]);
+}
+```
+
+>>>
+
+これでRestClientで確認してみてください
+<p style="font-size: 20px">さっきとは違うレスポンスが帰ってきてると思います</p>
+
+>>>
+
+これでAPI開発はひと段落しました
+<p style="font-size: 20px">以降は豆知識要素があります</p>
+
+>>>
+
 
 destroyかdeleteか
 <p style="font-size: 20px">結論、好き嫌い。慣習的にはdestroyは単数削除でdeleteは複数削除</p>
@@ -461,13 +567,16 @@ destroyかdeleteか
 
 >>>
 
-ちなみにこれまでHTTPステータスコードが200で返却されていた
+<p style="font-size: 35px">現在、全てのAPIがステータスコード200で返却されています</p>
+<p style="font-size: 30px">新規作成などは201で返却してくれるのが理想</p>
 
-新規作成などは201で返却してくれるのが理想
-<!-- 画像でHTTPステータスコード -->
+
+[ステータスコード](https://developer.mozilla.org/ja/docs/Web/HTTP/Status)
 
 
 >>>
+
+適切なステータスコードを返却する
 
 ```php
 <?php
@@ -549,63 +658,6 @@ class ContactController extends Controller
         // 3. 204
         return response()->json([], Response::HTTP_NO_CONTENT);
     }
-}
-
-```
-
-
->>>
-
-リソースの作成
-
-```bash
-$ php artisan make:resource ContactResource
-
-```
-
->>>
-
-```php
-public function toArray($request)
-{
-    // return parent::toArray($request);
-    return [
-        'id' => $this->id,
-        'first_name' => $this->first_name,
-        'last_name' => $this->last_name,
-        'full_name' => $this->full_name,
-        'avatar' => $this->avatar,
-        'gender' => $this->gender,
-        'phone_number' => $this->phone_number,
-        'house_phone_number' => $this->house_phone_number,
-        'email' => $this->email,
-        'address' => $this->address,
-        'birthday' => $this->birthday,
-        'memo' => $this->memo,
-        'path' => $this->path,
-        'created_at' => $this->created_at->diffForHumans()
-    ];
-}
-
-```
-
->>>
-
-
-```php
-
-public function index()
-{
-    // 1. 
-    $contacts = ContactResource::collection(Contact::all());
-
-    return response()->json(['contacts' => $contacts]);
-}
-
-public function show(Contact $contact)
-{
-    // 2. 
-    return $contact;
 }
 
 ```

@@ -29,7 +29,11 @@ $ docker exec -it app sh
 [appコンテナ]$ cd vue
 
 # 必要なライブラリのインストール
-[appコンテナ]$ npm install axios && npm install vue-router && npm install element-ui (npm install vuetify)
+[appコンテナ]$ npm install axios && npm install vue-router && npm install vuetify
+
+# vuetifyが提供するフォントやアイコンなどを使用可能にする
+[appコンテナ]$ npm install @mdi/js file-loader material-design-icons-iconfont --save-dev
+[appコンテナ]$ npm install @mdi/font -D
 
 # vueを立ち上げる
 [appコンテナ]$ npm run serve

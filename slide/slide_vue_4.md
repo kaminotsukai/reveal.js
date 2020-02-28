@@ -4,11 +4,15 @@
 
 >>>
 
-<img src="./test/examples/assets/demo1.png" style="width: 900px;">
+一覧画面
+<img src="./test/examples/assets/demo1.png" style="width: 800px;">
 
 >>>
 
-<img src="./test/examples/assets/demo2.png" style="width: 900px;">
+新規作成/編集画面
+<p style="font-size: 20px;">今回は、登録内容にAWSアカウントを作成していないといけない入力項目があるためバリーデーションは省いております</p>
+<img src="./test/examples/assets/demo2.png" style="width: 800px;">
+
 
 >>>
 
@@ -33,15 +37,29 @@ vue
 
 >>>
 
-```bash
- $ npm install @mdi/font -D
 
- $ npm install @mdi/js file-loader material-design-icons-iconfont --save-dev
+作成するもの
+
+```bash
+・ 一覧画面
+・ 新規登録画面
+・ [共通] headerコンポーネント
 ```
 
 >>>
 
-vuetifyのインストール
+<p style="font-size: 30px;">vuetifyが提供してくれているフォントやアイコンを使用する場合必要となります。</p>
+
+
+```bash
+[appコンテナ] $ npm install @mdi/font -D
+
+[appコンテナ] $ npm install @mdi/js file-loader material-design-icons-iconfont --save-dev
+```
+
+>>>
+
+vuetifyの導入
 
 ```javascript
 import Vue from 'vue'
@@ -70,7 +88,7 @@ new Vue({
 
 headerコンポーネントの作成
 
-```javascript
+```html
 <template>
   <v-card
     color="grey lighten-4"
