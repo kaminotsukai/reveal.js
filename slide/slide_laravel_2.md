@@ -174,6 +174,8 @@ $factory->define(Contact::class, function (Faker $faker) {
 <p style="font-size: 20px; color: green; ">databases/seeds/DatabaseSeeder.php</p>
 
 ```php
+use App\Models\Contact;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -219,6 +221,7 @@ http://localhost:1234
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Resources\ContactResource;
 
 // 連絡先API
 Route::apiResource('contact', 'ContactController');

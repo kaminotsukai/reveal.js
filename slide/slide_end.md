@@ -8,3 +8,10 @@
 >>>
 
 #### ありがとうございました！
+
+
+>>>
+
+差し支えなければアンケートの記入の方よろしくお願いいたします！
+
+https://docs.google.com/forms/d/e/1FAIpQLScx3uALPp8eaR2dO2BkV1Q-gtCJIUAsKTyUu81fE7okbcooOw/viewform

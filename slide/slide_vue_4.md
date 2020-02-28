@@ -162,7 +162,6 @@ export default {
         Header
     },
     data() {
-      contacts: []
     },
     // ここから
     methods: {
@@ -274,18 +273,11 @@ protected $routeMiddleware = [
 use Illuminate\Http\Request;
 
 Route::middleware(['cors'])->group(function () {
-
-    // ここから追記
     Route::options('/{any}', function() {
         return response()->json();
     })->where('any', '.*');
-    // ここまで
-
-    Route::get('contacts', 'ContactController@index');
-    Route::post('contacts', 'ContactController@store');
-    Route::delete('contacts/{id}', 'ContactController@destroy'); 
-    Route::get('contacts/{id}', 'ContactController@edit'); 
-    Route::put('contacts/{id}', 'ContactController@update');
+    // 連絡先API
+    Route::apiResource('contact', 'ContactController'); 
 });
 ```
 
