@@ -129,6 +129,10 @@ class Contact extends Model
     {
         return $this->last_name.' '.$this->first_name;
     }
+
+    public function getBirthdayAttribute($value) {
+        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
+    }
 }
 
 ```
