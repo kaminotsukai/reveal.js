@@ -439,6 +439,7 @@ class ContactController extends Controller
 
 確認してみましょう
 <p style="font-size: 20px;">422エラーが出ると成功です</p>
+<p style="font-size: 20px;">URL: http:/localhost:8000/api/contact / HTTPメソッド：POST / payload: 以下の通り</p>
 
 ```bash
 {
@@ -464,6 +465,7 @@ class ContactController extends Controller
 
 編集機能
 <p style="font-size: 20px;">idを元にContactを取得してくれる</p>
+<p style="font-size: 20px; color: green;">app/Http/Controllers/ContactController.php</p>
 
 ```php
 // 編集用データの取得
@@ -485,6 +487,7 @@ public function update(SaveContactRequest $request, Contact $contact)
 >>>
 
 削除機能
+<p style="font-size: 20px; color: green;">app/Http/Controllers/ContactController.php</p>
 
 ```php
 public function destroy(Contact $contact)
