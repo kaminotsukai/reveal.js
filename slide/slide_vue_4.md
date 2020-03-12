@@ -415,10 +415,10 @@ export default {
                   console.warn(error)
               })
       },
-      editItem() {
+      editContact() {
         // stub
       },
-      deleteItem() {
+      deleteContact() {
         // stub
       }
     },
